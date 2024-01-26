@@ -1,0 +1,191 @@
+#1) Below this code is for creation of EC2 instance:
+#--------------------------------------------------
+
+#main.tf
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_instance" "Terraform_Toutorial" {
+ami = "ami-0c84181f02b974bc3"
+count = 3
+instance_type = "t2.micro"
+tags = {
+Name = "Ambala_Terraform_instance"
+}
+}
+#===============================================================================================================================
+
+#2) Below this code is for creation of EC2 instance with applied VARIABLES within the MAIN.TF file:
+#--------------------------------------------------------------------------------------------------
+#main.tf
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_instance" "Terraform_Toutorial_1" {
+ami = "ami-<unique specific region's ami ID>"
+count = var.instance_count
+instance_type = var.instance_type
+tags = {
+Name = "Ambala_Terraform_instance"
+}
+}
+
+variable "instance_count" {
+description = "*"
+type = number
+}
+
+variable "instance_type" {
+description = "*"
+type = string
+}
+
+#=================================================================================================================================
+
+#3) Below the script is creation of EC2 instance with separated files 1. main.tf and 2. variable.tf:
+#------------------------------------------------------------------------------------------------
+#main.tf
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_instance" "Terraform_Toutorial_1" {
+ami = "ami-<unique specific region's ami ID>"
+count = var.instance_count
+instance_type = var.instance_type
+tags = {
+Name = "Ambala_Terraform_instance"
+}
+}
+
+#============
+
+#vi variable.tf
+variable "instance_count" {
+description = "*"
+type = number
+}
+
+variable "instance_type" {
+description = "*"
+type = string
+}
+
+#====================================================================================================================================
+
+#4) Below the script is creation of EC2 instance with separated files 1. main.tf and 2. variable.tf:
+#--------------------------------------------------------------------------------------------------
+
+#main.tf
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_instance" "Terraform_Toutorial_1" {
+ami = "ami-<unique specific region's ami ID>"
+count = var.instance_count
+instance_type = var.instance_type
+tags = {
+Name = "Ambala_Terraform_instance"
+}
+}
+
+#============
+
+#vi variable.tf
+variable "instance_count" {
+}
+
+variable "instance_type" {
+}
+#============
+#vi dev.tfvars
+instance_count = 1
+instance_type = "t2.micro"
+#=============
+#vi test.tfvars
+instance_count = 2
+instance_type = "t3.medium"
+
+#terrafrom apply --auto-approve -var-file="dev.tfvars"
+#terrafrom destroy --auto-approve -var-file="dev.tfvars"
+
+#terrafrom apply --auto-approve -var-file="test.tfvars"
+#terrafrom destroy --auto-approve -var-file="test.tfvars"
+
+#===============================================================================================================================
+
+#5) Terraform CLI concept:
+#-------------------------
+#main.tf
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_instance" "Terraform_Toutorial_1" {
+ami = "ami-<unique specific region's ami ID>"
+count = var.instance_count
+instance_type = var.instance_type
+tags = {
+Name = "Ambala_Terraform_instance"
+}
+}
+# TWO Terraform CLI methods
+#---------------------------
+#i)
+#terraform apply --auto-approve 
+#it will ask the value of instance_count: and instance_type: after, that we will give the value like 3 and "t3.medium" like that
+#terraform destroy --auto-approve 
+#it will ask the value of instance_count: and instance_type: after, that we will give the value like 3 and "t3.medium" like that
+
+#ii)
+#terraform apply --auto-approve -var="instance_count=3"
+#terraform apply --auto-approve -var="instance_type=t3.medium"
+# it will create the resources
+
+#terraform destroy --auto-approve -var="instance_count=3"
+#terraform destroy --auto-approve -var="instance_type=t3.medium"
+# it will destroy the resources
+#====================================================================================================================================
+
+#6) TERRAFORM OUTPUT Concept:
+#---------------------------
+
+#main.tf
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_instance" "Terraform_Toutorial" {
+ami = "ami-0c84181f02b974bc3"
+count = 3
+instance_type = "t2.micro"
+tags = {
+Name = "Ambala_Terraform_instance"
+}
+}
+
+output "Ambala_Terraform_instance" {
+value = [aws_instance.Terraform_Toutorial.public_ip, aws_instance.Terraform_Toutorial.private_ip, aws_instance.Terraform_Toutorial.public_dns, aws_instance.Terraform_Toutorial.private_dns]
+}
+#Terraform OUTPUT block which is used show the specific properties of resource which associated in main.tf file like public IP, private IP like that.
+
+#===========================================================================================================================================
+
+#7) Terraform IMPORT Concept:
+#---------------------------
+#which is used to import and track the resources which is created manually.
+
+# create an instance manually and copy the instance ID
+
+# vi main.tf
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_instance" "Terraform_Toutorial" {
+}
+
+# terraform import aws_instance.Terraform_Toutorial <Instance-ID>  it will automatically imports the resources and track it usin main.tf file
