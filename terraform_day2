@@ -1,0 +1,117 @@
+#Day - 02:
+#--------
+
+#1) creating some other resources like AWS S3, AWS EBS volume, AWS IAM user by using Terraform.
+# main.tf
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_s3_bucket" "one" {
+bucket = "Ambalavaneshwaran_bucket"
+}
+
+resource "aws_ebs_volume" "two" {
+size = 20
+availability_zone = "ap-south-1a"
+tags = {
+Name = "Ambalavaneshwaran_EBS_Volume"
+}
+}
+
+resource "aws_iam_user" "three" {
+name = "Ambalavaneshwara"
+}
+
+#terraform apply --auto-approve
+#==============================================================================================================================
+
+#2) Terraform Taint Concept:
+#----------------------------
+# Terraform Taint is nothing but, marking a resource as broken and forcing terraform to rebuild it.  
+# And it is useful for dealing with damaged resource, security concerns or fresh starts.
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_s3_bucket" "one" {
+bucket = "Ambalavaneshwaran_bucket"
+}
+
+resource "aws_ebs_volume" "two" {
+size = 20
+availability_zone = "ap-south-1a"
+tags = {
+Name = "Ambalavaneshwaran_EBS_Volume"
+}
+}
+
+resource "aws_iam_user" "three" {
+name = "Ambalavaneshwaran"
+}
+
+resource "aws_instance" "four" {
+ami = "ami-<ami-id>"
+instance_type = "t2.micro"
+tags = {
+Name = "Ambala_Terraform_instance"
+}
+}
+#terraform apply --auto-approve
+#terraform state list
+#terraform taint <particular resource> //it gets destroy and recreate an new resource
+#======================================================================================================================================
+#3) Terraform Lifecycle concept - Prevent LifeCycle:
+#---------------------------------------------------
+provider "aws" {
+region = "ap-south-1"
+}
+
+resource "aws_s3_bucket" "one" {
+bucket = "Ambalavaneshwaran_bucket"
+}
+
+resource "aws_ebs_volume" "two" {
+size = 20
+availability_zone = "ap-south-1a"
+tags = {
+Name = "Ambalavaneshwaran_EBS_Volume"
+}
+}
+
+resource "aws_iam_user" "three" {
+name = "Ambalavaneshwaran"
+}
+
+resource "aws_instance" "four" {
+ami = "ami-<ami-id>"
+instance_type = "t2.micro"
+tags = {
+Name = "Ambala_Terraform_instance"
+}
+lifecycle {
+prevent_destroy = true
+}
+}
+
+#terraform destroy --auto-approve //here in resource: aws_instance.four is not get destroy because it is prevent destroy and other all resources gets destroy.
+#=================================================================================================================================
+
+#4) Terraform Lifecycle concept - terraform fmt // this will execute the main.tf file as well structured and indendation correctly.
+
+#5) Terraform Lifecycle concept - Version Constratint:
+#------------------------------------------------------
+provider "aws" {
+    region = "ap-south-1"
+}
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+#terraform init -upgrade //it gets upgrade to newer version
